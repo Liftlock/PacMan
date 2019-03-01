@@ -172,7 +172,6 @@ public class GhostController : MonoBehaviour {
 		switch(persona) {
 			case GhostName.Blinky: 
 				//Wander();
-				
 				break; 
 			case GhostName.Pinky:
 				//Wander();
@@ -192,6 +191,8 @@ public class GhostController : MonoBehaviour {
 			if (m_state != GhostState.Scared) {
 				// PacMan dies
 				Debug.Log("Player Died!");
+				
+				other.GetComponent<Player>().GotCaught();
 
 			} else {
 				// Ghost dies
@@ -209,7 +210,7 @@ public class GhostController : MonoBehaviour {
 	void Scatter() { GetComponent<Pathfinding>().setTarget(m_scatterTarget.transform); }
 
 	void Chase() {
-
+		//TODO: work this out 
 	}
 
 

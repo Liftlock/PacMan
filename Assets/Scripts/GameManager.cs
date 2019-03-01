@@ -7,4 +7,10 @@ public class GameManager : MonoBehaviour {
     // update the score 
     // play some more music! 
   
+    
+
+
+
+
+
 }

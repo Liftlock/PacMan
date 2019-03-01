@@ -10,6 +10,8 @@ using System.Collections.Generic;
 
 
 */ 
+
+//TODO: Add in FSM for Player / Spawning / ETC ...
 public enum PlayerState {
     Dead,
     Normal, 
@@ -25,27 +27,34 @@ public class Player : MonoBehaviour {
     private float m_distance = 1f; // look ahead 1 tile
 
     public int m_score = 0; //TODO: move up into GM
+    public int m_dotsRemain; //TODO: move up into GM
     private int m_killstreak = 0; //TODO: move up into GM
     public PlayerState m_state = PlayerState.Normal;
     private bool m_arcadeControl = true;
-    private AudioSource[] pacmanSounds; 
+    private AudioSource[] m_pacmanSounds; 
     private AudioSource dotSound; 
     private AudioSource energizerSound;
     private AudioSource fruitSound; 
+    private AudioSource deadSound; 
     private List<GameObject> m_ghosts; 
     private Text guiScore; 
+    private Text guiDotsRemain;
     
     void Start() {
         m_dest = transform.position;
-        pacmanSounds = GetComponents<AudioSource>();
-        dotSound = pacmanSounds[0];
-        energizerSound = pacmanSounds[1];
-        fruitSound = pacmanSounds[2];  
+        m_pacmanSounds = GetComponents<AudioSource>();
+        dotSound = m_pacmanSounds[0];
+        energizerSound = m_pacmanSounds[1];
+        fruitSound = m_pacmanSounds[2];
+        deadSound = m_pacmanSounds[3];
 
         GameObject canvasObject = GameObject.FindGameObjectWithTag("HUDCanvas"); //TAG
         Transform textTr = canvasObject.transform.Find("ScoreText");
         guiScore = textTr.GetComponent<Text>();
-       // guiScore = transform.Find("ScoreText").GetComponent<GUIText>();
+
+        Transform dotTextTr = canvasObject.transform.Find("DotCount");
+        guiDotsRemain = dotTextTr.GetComponent<Text>();
+       
     }
 
     void Update() {
@@ -58,6 +67,7 @@ public class Player : MonoBehaviour {
          }
 
          guiScore.text = "Score: " + m_score.ToString();
+         guiDotsRemain.text = "DotsRemaining: " + m_dotsRemain.ToString();
     }
 
     void FixedUpdate() {
@@ -66,6 +76,7 @@ public class Player : MonoBehaviour {
     
     public void AddToScore(int amount) {
         m_score += amount;
+        m_dotsRemain--;
 	}
 
     public void AteDot() {
@@ -76,12 +87,18 @@ public class Player : MonoBehaviour {
         fruitSound.Play();
     }
 
-    public void Energize(){
+    public void Energize() {
         foreach (GameObject g in m_ghosts) {
             g.GetComponent<GhostController>().setState(GhostState.Scared);
         }
         energizerSound.Play();
     }
+
+    public void GotCaught() {
+        deadSound.Play();
+
+    }
+
 
     public void Init() {
          m_ghosts = new List<GameObject>();
@@ -106,7 +123,7 @@ public class Player : MonoBehaviour {
     
         } else {
             // force forward 
-           // m_nextDir = transform.forward; 
+           m_nextDir = transform.forward; 
             // players perspective (uses local space)
             if (Input.GetAxis("Horizontal") > 0) { m_nextDir = transform.right; }
             if (Input.GetAxis("Horizontal") < 0) { m_nextDir = -transform.right; }
@@ -123,7 +140,7 @@ public class Player : MonoBehaviour {
             } else {   // nextDir NOT valid
                 if (Valid(m_dir)) {  // and the prev. direction is valid
                     m_dest = (Vector3)transform.position + m_dir;   // continue on that direction
-                }
+                } 
                 // otherwise, do nothing ?
             }
         }
