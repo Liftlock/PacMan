@@ -187,20 +187,23 @@ public class GhostController : MonoBehaviour {
 
 
 	void OnTriggerEnter(Collider other) {
-		if (other.name == "player") {
-			if (m_state != GhostState.Scared) {
-				// PacMan dies
-				Debug.Log("Player Died!");
-				
-				other.GetComponent<Player>().GotCaught();
 
-			} else {
-				// Ghost dies
-				Debug.Log("Ghost Died!");
-				//GetComponent<Renderer>().enabled = false;
-				m_deathSound.Play();
-				m_state = GhostState.Dead;
-				m_renderer.enabled = false;
+		if(m_state != GhostState.Dead) { // we only care about collissions if the ghost isn't on its way back home
+
+			if(other.name == "player") {
+				if (m_state != GhostState.Scared){
+					// PacMan dies
+					Debug.Log("Player Died!");	
+					other.GetComponent<Player>().GotCaught();
+
+				} else {
+					// Ghost dies
+					Debug.Log("Ghost Died!");
+					//GetComponent<Renderer>().enabled = false;
+					m_deathSound.Play();
+					m_state = GhostState.Dead;
+					m_renderer.enabled = false;
+				}
 			}
 		}
 	}
