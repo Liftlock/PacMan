@@ -32,6 +32,7 @@ public enum GhostState {
 public class GhostController : MonoBehaviour {
 	public GhostName persona; 
 
+	public bool m_showPath;
 	// public float floatVariant = 0.2f;
 	// public float floatSpeed = 1.0f;
 	public float moveSpeed = 1.5f;
@@ -64,6 +65,7 @@ public class GhostController : MonoBehaviour {
 	private float m_scaredTimer = 0.0f;
 	private float m_chaseTimer = 0.0f;
 	
+	private LevelManager m_lm; 
 	private Level m_levelScript; // Reference to the instanced Level script
 	private Player m_pacMan; // Reference to the instanced Player script (used for targeting)
 	
@@ -114,75 +116,89 @@ public class GhostController : MonoBehaviour {
 		m_renderer.material.color = m_ghostColor;
 
 		// Pathfinding
+		
+		
+		m_lm = LevelManager.Instance;
+
 		//m_pathToTarget = m_pathfinder.findBestPath(m_level.getPathMap(), m_pos, m_pacMan.pos);
 			
 	}
 
 	void Update() {
-		
-		switch(m_state) {
-			case GhostState.Dead: 
-				GoHome(); // back to the ghost house with him
-				FollowPath();
-				break; 
-			case GhostState.Scatter:
-				Scatter();
-				FollowPath();
-				break;
-			case GhostState.Wander: 
-				GetComponent<Pathfinding>().setTarget(m_scatterTarget.transform);
-				Wander();
-				break; 
-			case GhostState.Chase: 
-				GetComponent<Pathfinding>().setTarget(m_pacMan.transform);
-				m_chaseTimer += Time.deltaTime;
-				if(m_chaseTimer > 10.0f) { 
-					m_state = m_lastState;
-					m_chaseTimer = 0;
-				}
-				FollowPath();
-				break; 
-			case GhostState.Scared:
-				m_scaredTimer += Time.deltaTime;
-				m_blinkTimer += Time.deltaTime;
-				if (m_blinkTimer > .2f ) {
-					m_altColor = !m_altColor; 
-					m_renderer.material.color = (m_altColor) ? Color.white : Color.blue;
-					m_blinkTimer = 0;
-				} 
-				if(m_scaredTimer > 10.0f) { 
-					m_renderer.material.color = m_ghostColor;
-					m_state = m_lastState;
-					if(m_state == GhostState.Scatter) { 
-						FollowPath(); 
-					}
-					m_scaredTimer = 0;
-				}
-				Wander(); // switch to wander after being scared 
 
-				break;
-			default: 
-				Debug.LogWarning("Gost Controller doesn't know what state it's in");
-				break;
-		}
+		
+
+		if(m_lm.State == LevelState.PLAY) { // only execute if the level is in play 
+			// debugging
+			GetComponent<Pathfinding>().m_showPath = m_showPath;
+		
+			switch(m_state) {
+				case GhostState.Dead: 
+					GoHome(); // back to the ghost house with him
+					FollowPath();
+					break; 
+				case GhostState.Scatter:
+					Scatter();
+					FollowPath();
+					break;
+				case GhostState.Wander: 
+					GetComponent<Pathfinding>().setTarget(m_scatterTarget.transform);
+					Wander();
+					break; 
+				case GhostState.Chase: 
+					GetComponent<Pathfinding>().setTarget(m_pacMan.transform);
+					m_chaseTimer += Time.deltaTime;
+					if(m_chaseTimer > 10.0f) { 
+						m_state = m_lastState;
+						m_chaseTimer = 0;
+					}
+					FollowPath();
+					break; 
+				case GhostState.Scared:
+					m_scaredTimer += Time.deltaTime;
+					m_blinkTimer += Time.deltaTime;
+					if (m_blinkTimer > .2f ) {
+						m_altColor = !m_altColor; 
+						m_renderer.material.color = (m_altColor) ? Color.white : Color.blue;
+						m_blinkTimer = 0;
+					} 
+					if(m_scaredTimer > 10.0f) { 
+						m_renderer.material.color = m_ghostColor;
+						m_state = m_lastState;
+						if(m_state == GhostState.Scatter) { 
+							FollowPath(); 
+						}
+						m_scaredTimer = 0;
+					}
+					Wander(); // switch to wander after being scared 
+
+					break;
+				default: 
+					Debug.LogWarning("Gost Controller doesn't know what state it's in");
+					break;
+			}
+		} 
 	}
 
 	void FixedUpdate() {
 
-		switch(persona) {
-			case GhostName.Blinky: 
-				//Wander();
-				break; 
-			case GhostName.Pinky:
-				//Wander();
-				break;
-			case GhostName.Inky: 
-				//Wander();
-				break;
-			case GhostName.Clyde:
-				//Wander();
-				break;
-		}		
+		if(m_lm.State == LevelState.PLAY) { // only execute if the level is in play 
+
+			switch(persona) {
+				case GhostName.Blinky: 
+					//Wander();
+					break; 
+				case GhostName.Pinky:
+					//Wander();
+					break;
+				case GhostName.Inky: 
+					//Wander();
+					break;
+				case GhostName.Clyde:
+					//Wander();
+					break;
+			}		
+		}
 	}
 
 

@@ -28,7 +28,7 @@ public class Player : MonoBehaviour {
 
     public int m_score = 0; //TODO: move up into GM
     public int m_dotsRemain; //TODO: move up into GM
-    private int m_killstreak = 0; //TODO: move up into GM
+    // private int m_killstreak = 0; //TODO: move up into GM
     public PlayerState m_state = PlayerState.Normal;
     private bool m_arcadeControl = true;
     private AudioSource[] m_pacmanSounds; 
@@ -37,8 +37,14 @@ public class Player : MonoBehaviour {
     private AudioSource fruitSound; 
     private AudioSource deadSound; 
     private List<GameObject> m_ghosts; 
+    
+    // TODO: move to HUD Manageer 
     private Text guiScore; 
     private Text guiDotsRemain;
+
+
+    private static LevelManager m_lm; 
+    
     
     void Start() {
         m_dest = transform.position;
@@ -54,11 +60,14 @@ public class Player : MonoBehaviour {
 
         Transform dotTextTr = canvasObject.transform.Find("DotCount");
         guiDotsRemain = dotTextTr.GetComponent<Text>();
+
+        m_lm = LevelManager.Instance;
        
     }
 
     void Update() {
          
+
         //TODO: move to a better home (dBugging code)
         if(Input.GetKeyDown("t")) {
             // toggle arcade controls (world space for top down (arcade) / local space for 3rd person )

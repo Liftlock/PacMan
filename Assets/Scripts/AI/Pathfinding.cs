@@ -32,7 +32,7 @@ using System.Collections.Generic;
 
 public class Pathfinding : MonoBehaviour {
 
-    public bool showPath = true;
+    public bool m_showPath = true;
     
     private Level m_levelScript; 
     private Transform m_target;
@@ -124,7 +124,7 @@ public class Pathfinding : MonoBehaviour {
 	void OnDrawGizmos() {
         Vector3 pathHeightAdjusment = Vector3.zero; 
         pathHeightAdjusment.y += 1;
-        if(showPath) { 
+        if(m_showPath) { 
 	 		Node seekerNode = m_levelScript.NodeFromWorldPoint(m_seeker.position);
             foreach( Node n in m_levelScript.getGrid()) { 
 	 			if(m_path != null) {
